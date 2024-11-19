@@ -6,7 +6,7 @@ end
 
 local web = true
 local user = "FalangoGaming" -- change if you're using a fork
-local branch = "main"
+local branch = "Debugging"
 local importCache = {}
 
 local function hasMethods(methods)
@@ -210,45 +210,45 @@ if readFile and writeFile then
             createFolder("hydroxide/user/" .. user .. "/ui/modules")
         end
 
+        -- ... (previous code)
+
         function environment.import(asset)
-            if importCache[asset] then
-                return unpack(importCache[asset])
-            end
-
-            local assets
-
-            if asset:find("rbxassetid://") then
-                assets = { game:GetObjects(asset)[1] }
-            elseif web then
-                if readFile and writeFile then
-                    local file = (hasFolderFunctions and "hydroxide/user/" .. user .. '/' .. asset .. ".lua") or ("hydroxide-" .. user .. '-' .. asset:gsub('/', '-') .. ".lua")
-                    local content
-
-                    if (isFile and not isFile(file)) or not importCache[asset] then
-                        content = game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
-                        writeFile(file, content)
-                    else
-                        local ran, result = pcall(readFile, file)
-
-                        if (not ran) or not importCache[asset] then
-                            content = game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
-                            writeFile(file, content)
-                        else
-                            content = result
-                        end
-                    end
-
-                    assets = { loadstring(content, asset .. '.lua')() }
-                else
-                    assets = { loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua"), asset .. '.lua')() }
-                end
-            else
-                assets = { loadstring(readFile("hydroxide/" .. asset .. ".lua"), asset .. '.lua')() }
-            end
-
-            importCache[asset] = assets
-            return unpack(assets)
+            if importCache[asset] then
+                return unpack(importCache[asset])
+            end
+        
+            local assets
+        
+            if asset:find("rbxassetid://") then
+                assets = { game:GetObjects(asset)[1] }
+            elseif web then
+                local file = (hasFolderFunctions and "hydroxide/user/" .. user .. '/' .. asset .. ".lua") or ("hydroxide-" .. user .. '-' .. asset:gsub('/', '-') .. ".lua")
+                local content
+        
+                local success, result = pcall(readFile, file) -- Use pcall for error handling
+        
+                if not success or not importCache[asset] then
+                    content = game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
+                    if content then -- Check if content was fetched successfully
+                        writeFile(file, content)
+                    else
+                        warn("Failed to fetch file:", "https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
+                        return nil -- Or handle the error appropriately
+                    end
+                else
+                    content = result
+                end
+        
+                assets = { loadstring(content, asset .. '.lua')() }
+            else
+                assets = { loadstring(readFile("hydroxide/" .. asset .. ".lua"), asset .. '.lua')() }
+            end
+        
+            importCache[asset] = assets
+            return unpack(assets)
         end
+    
+    -- ... (rest of the code)
 
         writeFile("__oh_version.txt", releaseInfo.tag_name)
     elseif ran and releaseInfo.tag_name == result then
