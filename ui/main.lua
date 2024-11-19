@@ -97,15 +97,22 @@ Collapse.MouseButton1Click:Connect(function()
 	Open:TweenPosition(constants.reveal, "Out", "Quad", 0.15)
 end)
 
-Interface.Name = HttpService:GenerateGUID(false)
-if getHui then
-	Interface.Parent = getHui()
-else
-	if syn then
-		syn.protect_gui(Interface)
-	end
+-- ... (previous code in main.lua)
 
-	Interface.Parent = CoreGui
+Interface.Name = HttpService:GenerateGUID(false)
+
+-- Try different locations for parenting the UI
+local success = false
+for _, location in ipairs({getHui and getHui(), CoreGui, game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")}) do
+    if location then
+        Interface.Parent = location
+        success = true
+        break
+    end
+end
+
+if not success then
+    warn("Failed to find a suitable parent for the Hydroxide UI.")
 end
 
 return Interface
