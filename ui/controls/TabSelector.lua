@@ -2,11 +2,20 @@ local TweenService = game:GetService("TweenService")
 
 local TabSelector = {}
 
-local Base = import("rbxassetid://11389137937").Base
+-- Assuming 'Base' refers to the UI structure, you might need to adjust this
+local Base = { 
+    Tabs = { Container = script.Parent.Parent.Tabs }, -- Adjust the path if needed
+    Body = { Pages = script.Parent.Parent.Body }  -- Adjust the path if needed
+} 
 local Tabs = Base.Tabs.Container
 local Pages = Base.Body.Pages
 
-local MessageBox, MessageType = import("ui/controls/MessageBox")
+-- Assuming 'MessageBox' and 'MessageType' are part of a notification system
+local MessageBox = {}  
+function MessageBox.Show(title, message, messageType)
+    warn(title, message) -- Replace with your actual message box implementation
+end
+local MessageType = { OK = 1 } 
 
 local requiredMethods = {
     ConstantScanner = import("modules/ConstantScanner").RequiredMethods,
