@@ -17,6 +17,27 @@ function MessageBox.Show(title, message, messageType)
 end
 local MessageType = { OK = 1 } 
 
+
+local function import(path)
+    local success, result = pcall(require, path)
+    if success then
+      return result
+    else
+      warn("Error importing:", path, result)
+      return nil
+    end
+  end
+  
+  local requiredMethods = {
+      ConstantScanner = import("modules/ConstantScanner").RequiredMethods,
+      UpvalueScanner = import("modules/UpvalueScanner").RequiredMethods,
+      ScriptScanner = import("modules/ScriptScanner").RequiredMethods,
+      ModuleScanner = import("modules/ModuleScanner").RequiredMethods,
+      ClosureSpy = import("modules/ClosureSpy").RequiredMethods,
+      RemoteSpy = import("modules/RemoteSpy").RequiredMethods   
+  
+  }
+
 local requiredMethods = {
     ConstantScanner = import("modules/ConstantScanner").RequiredMethods,
     UpvalueScanner = import("modules/UpvalueScanner").RequiredMethods,
