@@ -213,39 +213,39 @@ if readFile and writeFile then
         -- ... (previous code)
 
         function environment.import(asset)
-            if importCache[asset] then
-                return unpack(importCache[asset])
-            end
+             if importCache[asset] then
+                return unpack(importCache[asset])
+            end
         
-            local assets
+            local assets
         
-            if asset:find("rbxassetid://") then
-                assets = { game:GetObjects(asset)[1] }
-            elseif web then
-                local file = (hasFolderFunctions and "hydroxide/user/" .. user .. '/' .. asset .. ".lua") or ("hydroxide-" .. user .. '-' .. asset:gsub('/', '-') .. ".lua")
-                local content
+            if asset:find("rbxassetid://") then
+                assets = { game:GetObjects(asset)[1] }
+            elseif web then
+                local file = (hasFolderFunctions and "hydroxide/user/" .. user .. '/' .. asset .. ".lua") or ("hydroxide-" .. user .. '-' .. asset:gsub('/', '-') .. ".lua")
+                local content
         
-                local success, result = pcall(readFile, file) -- Use pcall for error handling
+                local success, result = pcall(readFile, file) -- Use pcall for error handling
         
-                if not success or not importCache[asset] then
-                    content = game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
-                    if content then -- Check if content was fetched successfully
-                        writeFile(file, content)
-                    else
-                        warn("Failed to fetch file:", "https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
-                        return nil -- Or handle the error appropriately
-                    end
-                else
-                    content = result
-                end
+                if not success or not importCache[asset] then
+                     content = game:HttpGetAsync("https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
+                     if content then -- Check if content was fetched successfully
+                         writeFile(file, content)
+                     else
+                         warn("Failed to fetch file:", "https://raw.githubusercontent.com/" .. user .. "/Hydroxide/" .. branch .. '/' .. asset .. ".lua")
+                         return nil -- Or handle the error appropriately
+                     end
+                else
+                     content = result
+                 end
         
-                assets = { loadstring(content, asset .. '.lua')() }
-            else
-                assets = { loadstring(readFile("hydroxide/" .. asset .. ".lua"), asset .. '.lua')() }
-            end
+                 assets = { loadstring(content, asset .. '.lua')() }
+             else
+                 assets = { loadstring(readFile("hydroxide/" .. asset .. ".lua"), asset .. '.lua')() }
+             end
         
-            importCache[asset] = assets
-            return unpack(assets)
+             importCache[asset] = assets
+             return unpack(assets)
         end
     
     -- ... (rest of the code)
